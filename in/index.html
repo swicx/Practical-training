@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道路标志识别</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('img/background.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            /* 设置为半透明，可调整透明度 */
+            background-color: rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            width: 80%;
+            padding: 40px;
+            border: 3px dashed #007bff;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: transparent;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 0 auto;
+            transform: translateX(-10px);
+        }
+
+        .upload-area:hover {
+            background-color: rgba(225, 244, 255, 0.3);
+            transform: scale(1.05) translateX(-10px);
+        }
+
+        .upload-area p {
+            color: #007bff;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .image-preview {
+            margin-top: 30px;
+            display: none;
+            text-align: center;
+        }
+
+        .image-preview img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            border: 2px solid #007bff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .result-text {
+            font-size: 18px;
+            color: #28a745;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        .file-icon {
+            font-size: 40px;
+            color: #007bff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .upload-area p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>道路标志识别</h1>
+        
+        <!-- 图片上传区域 -->
+        <div class="upload-area" id="upload-area" onclick="fileInput.click()">
+            <div class="file-icon">&#128194;</div>
+            <p>点击或拖拽图片上传</p>
+            <input type="file" id="file-input" accept="image/*" onchange="handleFileChange(event)">
+        </div>
+        
+        <!-- 图片预览区域 -->
+        <div class="image-preview" id="image-preview">
+            <h3>检测结果：</h3>
+            <img id="result-image" src="" alt="检测后的图片">
+            <p id="result-text" class="result-text"></p>
+        </div>
+
+        <!-- 错误消息 -->
+        <div class="error-message" id="error-message"></div>
+
+        <!-- 再次上传和退出按钮 -->
+        <div class="button-container">
+            <button onclick="retryUpload()">再次上传</button>
+            <button onclick="redirectToBlank()">退出</button>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const resultImage = document.getElementById('result-image');
+        const resultText = document.getElementById('result-text');
+        const errorMessage = document.getElementById('error-message');
+        const imagePreview = document.getElementById('image-preview');
+
+        let uploadedFile = null;
+
+        uploadArea.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            uploadArea.style.backgroundColor = rgba(225, 244, 255, 0.3);
+        });
+
+        uploadArea.addEventListener("dragleave", () => {
+            uploadArea.style.backgroundColor = "transparent";
+        });
+
+        uploadArea.addEventListener("drop", (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        function handleFileChange(event) {
+            const file = event.target.files[0];
+            handleFile(file);
+        }
+
+        function handleFile(file) {
+            // 客户端验证图片格式
+            if (!file.type.startsWith("image/")) {
+                errorMessage.textContent = "仅支持图片格式（jpg, png等）上传！";
+                imagePreview.style.display = "none";
+                return;
+            }
+
+            uploadedFile = file;
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fetch("http://127.0.0.1:8000/detect", {
+                method: "POST",
+                body: formData
+            })
+            .then(async (response) => {
+                if (!response.ok) {
+                    try {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || "服务器错误");
+                    } catch (e) {
+                        throw new Error("检测失败，请确认图片有效！");
+                    }
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                resultImage.src = url;
+                resultImage.style.display = "block";
+                resultText.textContent = "图片已检测完毕！";
+                imagePreview.style.display = "block";
+                errorMessage.textContent = "";
+            })
+            .catch(error => {
+                console.error(error);
+                errorMessage.textContent = `上传失败：${error.message}`;
+                imagePreview.style.display = "none";
+            });
+        }
+
+        function retryUpload() {
+            fileInput.value = null;
+            resultImage.style.display = "none";
+            resultText.textContent = "";
+            errorMessage.textContent = "";
+            imagePreview.style.display = "none";
+        }
+
+        function redirectToBlank() {
+            window.location.href = 'about:blank';
+        }
+    </script>
+</body>
+</html>
+    
