@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道路标志识别</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('img/background.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            width: 80%;
+            padding: 40px;
+            border: 3px dashed #007bff;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: transparent;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 0 auto;
+            transform: translateX(-10px);
+        }
+
+        .upload-area:hover {
+            background-color: rgba(225, 244, 255, 0.3);
+            transform: scale(1.05) translateX(-10px);
+        }
+
+        .upload-area p {
+            color: #007bff;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .image-preview {
+            margin-top: 30px;
+            display: none;
+            text-align: center;
+        }
+
+        .image-preview img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            border: 2px solid #007bff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .result-text {
+            font-size: 18px;
+            color: #28a745;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+
+        .ai-result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        .file-icon {
+            font-size: 40px;
+            color: #007bff;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* 新增样式 */
+        .side-button {
+            position: fixed;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .side-button:hover {
+            background-color: #0056b3;
+        }
+
+        .left {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+        }
+
+        .top-right {
+            top: 10px;
+            right: 10px;
+        }
+
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        canvas {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>道路标志识别</h1>
+
+        <!-- 图片上传区域 -->
+        <div class="upload-area" id="upload-area" onclick="fileInput.click()">
+            <div class="file-icon">&#128194;</div>
+            <p>点击或拖拽图片上传</p>
+            <input type="file" id="file-input" accept="image/*" onchange="handleFileChange(event)">
+        </div>
+
+        <!-- 图片预览区域 -->
+        <div class="image-preview" id="image-preview">
+            <h3>检测结果：</h3>
+            <img id="result-image" src="" alt="检测后的图片">
+            <p id="result-text" class="result-text"></p>
+        </div>
+
+        <!-- 错误消息 -->
+        <div class="error-message" id="error-message"></div>
+
+        <!-- AI模型问答区域 -->
+        <div class="ai-result" id="ai-result">
+            <h3>AI 模型回答：</h3>
+            <textarea id="user-question" placeholder="请输入您的问题..." rows="5"></textarea>
+            <button onclick="askQuestion()">提问</button>
+            <p id="ai-response"></p>
+        </div>
+
+        <!-- 再次上传和退出按钮 -->
+        <div class="button-container">
+            <button onclick="retryUpload()">再次上传</button>
+            <button onclick="redirectToBlank()">退出</button>
+        </div>
+
+        <!-- 语音输入和输出按钮 -->
+        <div class="button-container">
+            <button onclick="startSpeechInput()">语音输入</button>
+            <button onclick="startSpeechOutput()">语音输出</button>
+        </div>
+    </div>
+
+    <!-- 左方按钮 -->
+    <button id="imageResultsButton" class="side-button left">图片检测结果</button>
+
+    <!-- 右上方按钮 -->
+    <button id="detectionStatsButton" class="side-button top-right">检测统计</button>
+
+    <!-- 右下方按钮 -->
+    <button id="aiChatButton" class="side-button bottom-right">AI问答记录</button>
+
+    <!-- 弹窗HTML -->
+    <div id="imageResultsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeImageResults">&times;</span>
+            <h2>图片检测结果</h2>
+            <div id="imageResultsContent"></div>
+        </div>
+    </div>
+
+    <div id="detectionStatsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeDetectionStats">&times;</span>
+            <h2>检测统计</h2>
+            <div id="detectionStatsContent">
+                <p>总检测数：<span id="totalDetections">0</span></p>
+                <p>当日检测数：<span id="dailyDetections">0</span></p>
+                <canvas id="detectionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiChatModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeAiChat">&times;</span>
+            <h2>AI问答记录</h2>
+            <div id="aiChatContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const resultImage = document.getElementById('result-image');
+        const resultText = document.getElementById('result-text');
+        const errorMessage = document.getElementById('error-message');
+        const imagePreview = document.getElementById('image-preview');
+        const aiResult = document.getElementById('ai-result');
+        const aiResponse = document.getElementById('ai-response');
+        const userQuestionInput = document.getElementById('user-question');
+
+        let uploadedFile = null;
+
+        uploadArea.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            uploadArea.style.backgroundColor = "rgba(225, 244, 255, 0.3)";
+        });
+
+        uploadArea.addEventListener("dragleave", () => {
+            uploadArea.style.backgroundColor = "transparent";
+        });
+
+        uploadArea.addEventListener("drop", (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        function handleFileChange(event) {
+            const file = event.target.files[0];
+            handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith("image/")) {
+                errorMessage.textContent = "仅支持图片格式（jpg, png等）上传！";
+                imagePreview.style.display = "none";
+                aiResult.style.display = "none";
+                return;
+            }
+
+            uploadedFile = file;
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fetch("http://127.0.0.1:8000/detect", {
+                method: "POST",
+                body: formData
+            })
+            .then(async (response) => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || "服务器错误");
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                resultImage.src = url;
+                resultImage.style.display = "block";
+                resultText.textContent = "图片已检测完毕！";
+                imagePreview.style.display = "block";
+                errorMessage.textContent = "";
+                aiResult.style.display = "block";
+            })
+            .catch(error => {
+                console.error(error);
+                errorMessage.textContent = `上传失败：${error.message}`;
+                imagePreview.style.display = "none";
+                aiResult.style.display = "none";
+            });
+        }
+
+        function askQuestion() {
+            const userQuestion = userQuestionInput.value.trim();
+            if (!userQuestion) {
+                aiResponse.textContent = "请输入一个问题。";
+                return;
+            }
+
+            fetch("http://127.0.0.1:8000/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: userQuestion })
+            })
+            .then(response => response.json())
+            .then(data => {
+                aiResponse.textContent = data.response || "没有回答。";
+            })
+            .catch(error => {
+                aiResponse.textContent = "AI回答失败，请稍后再试。";
+            });
+        }
+
+        function retryUpload() {
+            fileInput.value = null;
+            resultImage.style.display = "none";
+            resultText.textContent = "";
+            errorMessage.textContent = "";
+            imagePreview.style.display = "none";
+            aiResult.style.display = "none";
+            userQuestionInput.value = "";
+            aiResponse.textContent = "";
+        }
+
+        function redirectToBlank() {
+            window.location.href = 'about:blank';
+        }
+
+        function startSpeechInput() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'zh-CN';
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                userQuestionInput.value = transcript;
+                askQuestion();
+            };
+
+            recognition.onerror = function(event) {
+                aiResponse.textContent = "语音识别出错，请再试一次。";
+            };
+        }
+
+        function startSpeechOutput() {
+            const text = aiResponse.textContent;
+            if (!text) {
+                aiResponse.textContent = "没有可输出的文本。";
+                return;
+            }
+
+            fetch("http://127.0.0.1:8000/text-to-speech/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const audio = new Audio(URL.createObjectURL(blob));
+                audio.play();
+            })
+            .catch(error => {
+                aiResponse.textContent = "语音输出失败，请稍后再试。";
+            });
+        }
+
+        // 获取按钮和弹窗元素
+        const imageResultsButton = document.getElementById('imageResultsButton');
+        const detectionStatsButton = document.getElementById('detectionStatsButton');
+        const aiChatButton = document.getElementById('aiChatButton');
+
+        const imageResultsModal = document.getElementById('imageResultsModal');
+        const detectionStatsModal = document.getElementById('detectionStatsModal');
+        const aiChatModal = document.getElementById('aiChatModal');
+
+        const closeImageResults = document.getElementById('closeImageResults');
+        const closeDetectionStats = document.getElementById('closeDetectionStats');
+        const closeAiChat = document.getElementById('closeAiChat');
+
+        // 显示图片检测结果弹窗
+        imageResultsButton.addEventListener('click', () => {
+            imageResultsModal.style.display = 'block';
+            fetchImageResults();
+        });
+
+        // 显示检测统计弹窗
+        detectionStatsButton.addEventListener('click', () => {
+            detectionStatsModal.style.display = 'block';
+            fetchDetectionStats();
+        });
+
+        // 显示AI问答记录弹窗
+        aiChatButton.addEventListener('click', () => {
+            aiChatModal.style.display = 'block';
+            fetchAiChatRecords();
+        });
+
+        // 关闭图片检测结果弹窗
+        closeImageResults.addEventListener('click', () => {
+            imageResultsModal.style.display = 'none';
+        });
+
+        // 关闭检测统计弹窗
+        closeDetectionStats.addEventListener('click', () => {
+            detectionStatsModal.style.display = 'none';
+        });
+
+        // 关闭AI问答记录弹窗
+        closeAiChat.addEventListener('click', () => {
+            aiChatModal.style.display = 'none';
+        });
+
+        // 获取图片检测结果
+        function fetchImageResults() {
+            const imageResultsContent = document.getElementById('imageResultsContent');
+            imageResultsContent.innerHTML = '<p>加载中...</p>';
+
+            fetch('http://127.0.0.1:8000/image-results')
+                .then(response => response.json())
+                .then(data => {
+                    imageResultsContent.innerHTML = '';
+                    data.forEach(result => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p>图片路径：${result.imagePath}</p><p>检测结果：${result.detectionResult}</p>`;
+                        imageResultsContent.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    imageResultsContent.innerHTML = `<p>加载失败：${error.message}</p>`;
+                });
+        }
+
+        // 获取检测统计
+        function fetchDetectionStats() {
+            const totalDetections = document.getElementById('totalDetections');
+            const dailyDetections = document.getElementById('dailyDetections');
+            const detectionChartCanvas = document.getElementById('detectionChart');
+
+            totalDetections.textContent = '加载中...';
+            dailyDetections.textContent = '加载中...';
+
+            fetch('http://127.0.0.1:8000/detection-stats')
+                .then(response => response.json())
+                .then(data => {
+                    totalDetections.textContent = data.total;
+                    dailyDetections.textContent = data.daily;
+
+                    const ctx = detectionChartCanvas.getContext('2d');
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.dates,
+                            datasets: [{
+                                label: '每日检测数',
+                                data: data.counts,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: '每日检测数'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    totalDetections.textContent = '加载失败';
+                    dailyDetections.textContent = '加载失败';
+                });
+        }
+
+        // 获取AI问答记录
+        function fetchAiChatRecords() {
+            const aiChatContent = document.getElementById('aiChatContent');
+            aiChatContent.innerHTML = '<p>加载中...</p>';
+
+            fetch('http://127.0.0.1:8000/ai-chat-records')
+                .then(response => response.json())
+                .then(data => {
+                    aiChatContent.innerHTML = '';
+                    data.forEach(record => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p>用户问题：${record.userQuestion}</p><p>AI回答：${record.aiResponse}</p>`;
+                        aiChatContent.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    aiChatContent.innerHTML = `<p>加载失败：${error.message}</p>`;
+                });
+        }
+
+    </script>
+<div id="detection-history"></div>
+
+<script>
+fetch("http://localhost:8000/image-results")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("detection-history");
+    data.forEach(item => {
+      const img = document.createElement("img");
+      img.src = item.imagePath; // 后端返回的图片路径
+      img.style.width = "200px";
+      img.style.margin = "10px";
+      container.appendChild(img);
+    });
+  });
+</script>
+
+
+</body>
+</html>

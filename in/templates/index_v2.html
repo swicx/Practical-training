@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>检测结果展示</title>
+  <style>
+    #image-preview-modal {
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      display: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <h1>检测记录</h1>
+  <div id="history-list"></div>
+
+  <div id="image-preview-modal">
+    <img id="preview-image" src="" style="width: 100%;" />
+    <button onclick="closePreview()">关闭</button>
+  </div>
+
+  <script>
+    function loadImageRecords() {
+      fetch("http://127.0.0.1:8000/image-results")
+        .then(res => res.json())
+        .then(data => {
+          const listDiv = document.getElementById("history-list");
+          listDiv.innerHTML = "";
+
+          data.forEach(item => {
+            const record = document.createElement("div");
+            record.innerHTML = `
+              <p>${item.timestamp} - ${item.detectionResult}</p>
+              <button onclick="previewImage('${item.imagePath}')">查看图片</button>
+            `;
+            listDiv.appendChild(record);
+          });
+        });
+    }
+
+    function previewImage(path) {
+      const modal = document.getElementById("image-preview-modal");
+      const img = document.getElementById("preview-image");
+      img.src = path;
+      modal.style.display = "block";
+    }
+
+    function closePreview() {
+      document.getElementById("image-preview-modal").style.display = "none";
+    }
+
+    window.onload = loadImageRecords;
+  </script>
+</body>
+</html>

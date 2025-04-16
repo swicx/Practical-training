@@ -1,0 +1,180 @@
+[
+  {
+    "time": "2025-04-11T10:25:26.586969",
+    "labels": [
+      "Red Light",
+      "Red Light",
+      "Green Light",
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T10:25:36.791399",
+    "labels": [
+      "Red Light",
+      "Red Light",
+      "Green Light",
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T10:37:38.322169",
+    "labels": [
+      "Red Light",
+      "Red Light",
+      "Green Light",
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T10:41:49.247888",
+    "labels": [
+      "Stop"
+    ]
+  },
+  {
+    "time": "2025-04-11T10:49:35.221807",
+    "labels": [
+      "person",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike"
+    ]
+  },
+  {
+    "time": "2025-04-11T10:49:50.045968",
+    "labels": [
+      "Red Light",
+      "Red Light",
+      "Green Light",
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:19:02.902615",
+    "labels": [
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:27:13.138189",
+    "labels": [
+      "Stop"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:36:36.475002",
+    "labels": [
+      "Stop"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:36:41.245930",
+    "labels": [
+      "Green Light",
+      "Red Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:36:44.579116",
+    "labels": [
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:36:54.705902",
+    "labels": [
+      "person",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:37:00.584613",
+    "labels": [
+      "person",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "car",
+      "car",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike",
+      "motorbike",
+      "car",
+      "car",
+      "motorbike"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:38:02.107014",
+    "labels": [
+      "Red Light",
+      "Red Light",
+      "Green Light",
+      "Green Light"
+    ]
+  },
+  {
+    "time": "2025-04-11T11:50:08.774626",
+    "labels": [
+      "Stop"
+    ]
+  }
+]
