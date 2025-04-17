@@ -6,15 +6,16 @@
 
 - **图像识别功能**：通过上传图片识别道路标志，识别结果叠加在原图中显示。
 
-  <img src="G:\read\1.png" alt="1" style="zoom:67%;" />
+  ![Logo](in/1.png)
 
-  <img src="G:\read\2.png" alt="2" style="zoom:67%;" />
 
-  <img src="G:\read\3.png" alt="3" style="zoom:67%;" />
+   ![Logo](in/2.png)
+
+   ![Logo](in/3.png)
 
 - **语音交互**：支持语音输入提问和语音播报 AI 回答。
 
-  <img src="G:\read\4.png" alt="4" style="zoom:67%;" />
+   ![Logo](in/4.png)
 
 - **AI 问答系统**：可基于用户提问生成交通法规相关回答（集成本地语言模型）。
 
@@ -22,15 +23,15 @@
   
   - 图片识别历史记录
   
-    <img src="G:\read\5.png" alt="5" style="zoom: 33%;" />
+     ![Logo](in/5.png)
   
   - AI 问答历史记录
   
-    <img src="G:\read\6.png" alt="6" style="zoom: 33%;" />
+    ![Logo](in/6.png)
   
   - 底部数据看板显示总检测数、当日检测数与每日趋势图（Chart.js）
   
-    ![7](G:\read\7.png)
+    ![Logo](in/7.png)
   
 - **前后端分离**：前端使用原生 HTML/CSS/JS，后端使用 FastAPI + YOLOv8 + 本地语言模型。
 
