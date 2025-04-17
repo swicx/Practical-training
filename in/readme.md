@@ -6,10 +6,10 @@
 
 - **图像识别功能**：通过上传图片识别道路标志，识别结果叠加在原图中显示。
 
-  ![Logo](in/1.png)
+  ![Logo](https://github.com/swicx/Practical-training/blob/main/in/1.png)
 
 
-   ![Logo](in/2.png)
+   ![Logo](https://github.com/swicx/Practical-training/blob/main/in/2.png)
 
    ![Logo](in/3.png)
 
