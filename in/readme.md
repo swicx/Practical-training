@@ -11,11 +11,11 @@
 
    ![Logo](https://github.com/swicx/Practical-training/blob/main/in/2.png)
 
-   ![Logo](in/3.png)
+   ![Logo](https://github.com/swicx/Practical-training/blob/main/in/3.png)
 
 - **语音交互**：支持语音输入提问和语音播报 AI 回答。
 
-   ![Logo](in/4.png)
+   ![Logo](https://github.com/swicx/Practical-training/blob/main/in/4.png)
 
 - **AI 问答系统**：可基于用户提问生成交通法规相关回答（集成本地语言模型）。
 
@@ -23,15 +23,15 @@
   
   - 图片识别历史记录
   
-     ![Logo](in/5.png)
+     ![Logo](https://github.com/swicx/Practical-training/blob/main/in/5.png)
   
   - AI 问答历史记录
   
-    ![Logo](in/6.png)
+    ![Logo](https://github.com/swicx/Practical-training/blob/main/in/6.png)
   
   - 底部数据看板显示总检测数、当日检测数与每日趋势图（Chart.js）
   
-    ![Logo](in/7.png)
+    ![Logo](https://github.com/swicx/Practical-training/blob/main/in/7.png)
   
 - **前后端分离**：前端使用原生 HTML/CSS/JS，后端使用 FastAPI + YOLOv8 + 本地语言模型。
 
